@@ -1,0 +1,22 @@
+{
+  "name": "vuepress-plugin-last-reading",
+  "version": "0.0.1",
+  "main": "src/index.js",
+  "type": "commonjs",
+  "description": "record last reading",
+  "author": "tolking <qw13131wang@gmail.com>",
+  "license": "MIT",
+  "repository": "https://github.com/tolking/vuepress-plugin-last-reading",
+  "bugs": {
+    "url": "https://github.com/tolking/vuepress-plugin-last-reading/issues"
+  },
+  "homepage": "https://github.com/tolking/vuepress-plugin-last-reading",
+  "doc": "https://github.com/tolking/vuepress-plugin-last-reading#readme",
+  "keywords": [
+    "vuepress",
+    "plugin",
+    "last-reading",
+    "reading",
+    "history"
+  ]
+}
