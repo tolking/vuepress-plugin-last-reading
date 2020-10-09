@@ -1,9 +1,9 @@
 const path = require('path')
-const i18n = require('./i18n')
 
 module.exports = ({
   popupComponent = 'LastReadingPopup',
-  updatePopup = i18n
+  countdown = 5000,
+  popupConfig
 }) => {
   return {
     async clientDynamicModules () {
@@ -11,7 +11,8 @@ module.exports = ({
         name: 'lastReading.js',
         content: `export default ${JSON.stringify({
           popupComponent,
-          updatePopup
+          countdown,
+          popupConfig
         })}`
       }]
     },

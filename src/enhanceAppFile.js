@@ -11,17 +11,17 @@ export default ({ Vue }) => {
     },
 
     mounted() {
-      window.addEventListener('scroll', this.lastReading)
+      window.addEventListener('scroll', this.setLastReading)
     },
-    
+
     methods: {
-      lastReading() {
+      setLastReading() {
         if (!this.running) {
           this.running = true
-          requestAnimationFrame(this.save)
+          requestAnimationFrame(this.saveLastReading)
         }
       },
-      save() {
+      saveLastReading() {
         localStorage.setItem('lastReading', JSON.stringify({
           path: this.$route.path,
           scrollTop: Math.max(window.pageYOffset, document.documentElement.scrollTop, 0),

@@ -1,20 +1,20 @@
 <template>
   <transition name="sw-update-popup">
     <slot
-      :reload="reload"
-      :enabled="enabled"
+      :goto="goto"
+      :show="show"
       :message="message"
       :buttonText="buttonText"
     >
       <div
-        v-if="enabled"
+        v-if="show"
         class="sw-update-popup"
       >
         {{ message }}
 
         <br>
 
-        <button @click="reload">
+        <button @click="goto">
           {{ buttonText }}
         </button>
       </div>
@@ -24,6 +24,7 @@
 
 <script>
 import config from '@dynamic/lastReading'
+import { i18n } from './i18n'
 
 export default {
   name: 'LastReadingPopup',
@@ -31,44 +32,55 @@ export default {
   data() {
     return {
       lastReading: null,
-      enabled: false
+      show: false
     }
   },
 
   watch: {
     $route(value) {
-      value.path === this.lastReading.path && this.reload()
+      this.show && value.path === this.lastReading.path && this.goto()
     }
   },
 
   computed: {
     popupConfig() {
-      return config.updatePopup[this.$lang] || config.updatePopup
+      const popupConfig = Object.assign(i18n, config.popupConfig)
+      const lang = this.$lang.split('-')[0]
+      return popupConfig[`/${lang}/`] || popupConfig[this.$localePath] || popupConfig
     },
 
     message() {
       const c = this.popupConfig
-      return (c && c.message) || c['/'].message || ''
+      return (c && c.message) || i18n['/'].message
     },
 
     buttonText() {
       const c = this.popupConfig
-      return (c && c.buttonText) || c['/'].buttonText || ''
+      return (c && c.buttonText) || i18n['/'].buttonText
     }
   },
 
   mounted() {
     this.lastReading = JSON.parse(localStorage.getItem('lastReading'))
-    this.enabled = !!this.lastReading && !(this.$route.path === this.lastReading.path && document.documentElement.scrollTop === this.lastReading.scrollTop)
+    this.show =
+      !!this.lastReading &&
+      !(
+        this.$route.path === this.lastReading.path &&
+        document.documentElement.scrollTop === this.lastReading.scrollTop
+      )
+
+    this.show && setTimeout(() => {
+      this.show = false
+    }, config.countdown)
   },
 
   methods: {
-    reload () {
+    goto() {
       if (this.$route.path !== this.lastReading.path) {
         this.$router.replace(this.lastReading.path)
       } else {
         document.documentElement.scrollTop = this.lastReading.scrollTop
-        this.enabled = false
+        this.show = false
       }
     }
   }
@@ -86,7 +98,7 @@ export default {
   background: #fff;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
   text-align: center;
-  z-index: 2;
+  z-index: 12;
 }
 
 .sw-update-popup > button {
