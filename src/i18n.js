@@ -1,4 +1,4 @@
-export const i18n = {
+module.exports = {
   '/': {
     message: 'Go back to the last reading.',
     buttonText: 'Go to'

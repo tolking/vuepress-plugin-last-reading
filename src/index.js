@@ -1,9 +1,10 @@
 const path = require('path')
+const i18n = require('./i18n')
 
 module.exports = ({
   popupComponent = 'LastReadingPopup',
-  countdown = 5000,
-  popupConfig
+  popupConfig = i18n,
+  countdown = 30000,
 }) => {
   return {
     async clientDynamicModules () {
