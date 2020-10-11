@@ -1,9 +1,9 @@
 {
   "name": "vuepress-plugin-last-reading",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "main": "src/index.js",
   "type": "commonjs",
-  "description": "record last reading",
+  "description": "record the last reading",
   "author": "tolking <qw13131wang@gmail.com>",
   "license": "MIT",
   "repository": "https://github.com/tolking/vuepress-plugin-last-reading",
