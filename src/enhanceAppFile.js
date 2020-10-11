@@ -13,6 +13,7 @@ export default ({ Vue }) => {
         localStorage.setItem('lastReading', JSON.stringify({
           path: this.$route.path,
           scrollTop: document.documentElement.scrollTop,
+          timestamp: new Date().getTime(),
         }))
       }
     }

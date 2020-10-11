@@ -35,15 +35,6 @@ export default {
     }
   },
 
-  watch: {
-    $route(value) {
-      this.show &&
-        this.lastReading &&
-        value.path === this.lastReading.path &&
-        this.goto()
-    }
-  },
-
   computed: {
     popupConfig() {
       const popupConfig = config.popupConfig
@@ -63,31 +54,46 @@ export default {
   },
 
   mounted() {
-    this.lastReading = JSON.parse(localStorage.getItem('lastReading'))
-    this.show =
-      this.lastReading &&
-      !(
-        this.$route.path === this.lastReading.path &&
-        document.documentElement.scrollTop === this.lastReading.scrollTop
-      )
-
-    this.show && config.countdown && setTimeout(() => {
-      this.show = false
-    }, config.countdown)
+    window.addEventListener('load', this.init)
   },
 
   methods: {
+    init() {
+      this.lastReading = JSON.parse(localStorage.getItem('lastReading'))
+
+      if (this.lastReading) {
+        if (
+          this.$route.path === this.lastReading.path &&
+          document.documentElement.scrollTop === this.lastReading.scrollTop
+        ) {
+          this.clean()
+        } else if (config.popupCustom) {
+          config.popupCustom(this)
+        } else {
+          this.show = true
+          config.popupCountdown && setTimeout(this.clean, config.popupCountdown)
+        }
+      }
+    },
+
     goto() {
       if (this.$route.path !== this.lastReading.path) {
-        this.$router.replace(this.lastReading.path)
+        this.$router.replace(this.lastReading.path).then(() => {
+          document.documentElement.scrollTop = this.lastReading.scrollTop
+          this.clean()
+        })
       } else {
         this.$nextTick(() => {
           document.documentElement.scrollTop = this.lastReading.scrollTop
-          this.lastReading = null
-          this.show = false
-          localStorage.removeItem('lastReading')
+          this.clean()
         })
       }
+    },
+
+    clean() {
+      this.show = false
+      this.lastReading = null
+      localStorage.removeItem('lastReading')
     }
   }
 }
