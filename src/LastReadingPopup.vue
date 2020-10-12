@@ -1,20 +1,20 @@
 <template>
   <transition name="sw-update-popup">
     <slot
-      :reload="reload"
-      :enabled="enabled"
+      :goto="goto"
+      :show="show"
       :message="message"
       :buttonText="buttonText"
     >
       <div
-        v-if="enabled"
+        v-if="show"
         class="sw-update-popup"
       >
         {{ message }}
 
         <br>
 
-        <button @click="reload">
+        <button @click="goto">
           {{ buttonText }}
         </button>
       </div>
@@ -31,45 +31,69 @@ export default {
   data() {
     return {
       lastReading: null,
-      enabled: false
-    }
-  },
-
-  watch: {
-    $route(value) {
-      value.path === this.lastReading.path && this.reload()
+      show: false
     }
   },
 
   computed: {
     popupConfig() {
-      return config.updatePopup[this.$lang] || config.updatePopup
+      const popupConfig = config.popupConfig
+      const lang = this.$lang.split('-')[0]
+      return popupConfig[`/${lang}/`] || popupConfig[this.$localePath] || popupConfig
     },
 
     message() {
       const c = this.popupConfig
-      return (c && c.message) || c['/'].message || ''
+      return (c && c.message) || c['/'].message
     },
 
     buttonText() {
       const c = this.popupConfig
-      return (c && c.buttonText) || c['/'].buttonText || ''
+      return (c && c.buttonText) || c['/'].buttonText
     }
   },
 
   mounted() {
-    this.lastReading = JSON.parse(localStorage.getItem('lastReading'))
-    this.enabled = !!this.lastReading && !(this.$route.path === this.lastReading.path && document.documentElement.scrollTop === this.lastReading.scrollTop)
+    window.addEventListener('load', this.init)
   },
 
   methods: {
-    reload () {
-      if (this.$route.path !== this.lastReading.path) {
-        this.$router.replace(this.lastReading.path)
-      } else {
-        document.documentElement.scrollTop = this.lastReading.scrollTop
-        this.enabled = false
+    init() {
+      this.lastReading = JSON.parse(localStorage.getItem('lastReading'))
+
+      if (this.lastReading) {
+        if (
+          this.$route.path === this.lastReading.path &&
+          document.documentElement.scrollTop === this.lastReading.scrollTop
+        ) {
+          this.clean()
+        } else if (config.popupCustom) {
+          config.popupCustom.apply(this)
+        } else {
+          this.show = true
+          config.popupCountdown && setTimeout(this.clean, config.popupCountdown)
+        }
       }
+    },
+
+    goto() {
+      if (this.$route.path !== this.lastReading.path) {
+        this.$router.replace(this.lastReading.path).then(() => {
+          document.documentElement.scrollTop = this.lastReading.scrollTop
+          this.clean()
+        })
+      } else {
+        this.$nextTick(() => {
+          document.documentElement.scrollTop = this.lastReading.scrollTop
+          this.clean()
+        })
+      }
+    },
+
+    clean() {
+      this.show = false
+      this.lastReading = null
+      localStorage.removeItem('lastReading')
     }
   }
 }
@@ -86,7 +110,7 @@ export default {
   background: #fff;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
   text-align: center;
-  z-index: 2;
+  z-index: 12;
 }
 
 .sw-update-popup > button {
