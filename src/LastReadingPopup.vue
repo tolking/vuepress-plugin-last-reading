@@ -68,7 +68,7 @@ export default {
         ) {
           this.clean()
         } else if (config.popupCustom) {
-          config.popupCustom(this)
+          config.popupCustom.apply(this)
         } else {
           this.show = true
           config.popupCountdown && setTimeout(this.clean, config.popupCountdown)
