@@ -35,7 +35,7 @@ module.exports = {
   plugins: [
     ['last-reading', {
       popupConfig: {
-        message: 'Go back to the last reading',
+        message: 'Go back',
         buttonText: 'ok'
       },
     }]
@@ -68,15 +68,15 @@ Custom popup related logic.
 module.exports = {
   plugins: [
     ['last-reading', {
-      popupCustom: (that) => {
+      popupCustom: function() {
         const now = new Date().getTime()
-        if (now - that.lastReading.timestamp > 30 * 24 * 60 *60 * 1000) {
-          that.clean()
-        } else if (that.$route.path === that.lastReading.path) {
-          that.goto()
+        if (now - this.lastReading.timestamp > 30 * 24 * 60 *60 * 1000) {
+          this.clean()
+        } else if (this.$route.path === this.lastReading.path) {
+          this.goto()
         } else {
-          that.show = true
-          setTimeout(that.clean, 10000)
+          this.show = true
+          setTimeout(this.clean, 10000)
         }
       },
     }]
