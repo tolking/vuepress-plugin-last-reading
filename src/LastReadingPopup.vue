@@ -54,7 +54,11 @@ export default {
   },
 
   mounted() {
-    window.addEventListener('load', this.init)
+    if (!!window.ActiveXObject || "ActiveXObject" in window) {
+      window.addEventListener('load', this.init()) // for IE
+    } else {
+      window.addEventListener('load', this.init)
+    }
   },
 
   methods: {
@@ -62,13 +66,10 @@ export default {
       this.lastReading = JSON.parse(localStorage.getItem('lastReading'))
 
       if (this.lastReading) {
-        if (
-          this.$route.path === this.lastReading.path &&
-          document.documentElement.scrollTop === this.lastReading.scrollTop
-        ) {
-          this.clean()
-        } else if (config.popupCustom) {
+        if (config.popupCustom) {
           config.popupCustom.apply(this)
+        } else if (this.$route.path === this.lastReading.path) {
+          this.goto()
         } else {
           this.show = true
           config.popupCountdown && setTimeout(this.clean, config.popupCountdown)
@@ -92,7 +93,6 @@ export default {
 
     clean() {
       this.show = false
-      this.lastReading = null
       localStorage.removeItem('lastReading')
     }
   }
