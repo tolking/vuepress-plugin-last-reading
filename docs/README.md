@@ -61,7 +61,7 @@ Configure the time that the popup will display.
 A custom component to replace the default popup component, refer to [Customize the UI of Popup](#customize-the-ui-of-popup).
 
 ### popupCustom
-- Type: `Object`
+- Type: `Function`
 - Required: `false`
 
 Custom popup related logic.
